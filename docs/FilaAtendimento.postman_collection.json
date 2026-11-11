@@ -1,0 +1,314 @@
+{
+  "info": {
+    "_postman_id": "b7c1f5e2-3a4d-4c8e-9f10-2d6a7b8c9e01",
+    "name": "Fila de Atendimento — API",
+    "description": "Coleção do MVP de Fila de Atendimento. Execute na ordem: Login → Emitir senha → Painel → Chamar próxima → Iniciar → Finalizar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "filaId", "value": "1" },
+    { "key": "senhaId", "value": "" },
+    { "key": "atendimentoId", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "Login (atendente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('token', body.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"atendente@fila.local\",\n  \"senha\": \"Atendente@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Usuário autenticado (/me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Senhas",
+      "item": [
+        {
+          "name": "Emitir senha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('senhaId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filaId\": {{filaId}}\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/senhas", "host": ["{{baseUrl}}"], "path": ["api", "senhas"] }
+          }
+        },
+        {
+          "name": "Última senha do dia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/senhas/ultima?filaId={{filaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "senhas", "ultima"],
+              "query": [{ "key": "filaId", "value": "{{filaId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Consultar senha por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/senhas/{{senhaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "senhas", "{{senhaId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar senhas (filtros)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/senhas?filaId={{filaId}}&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "senhas"],
+              "query": [
+                { "key": "filaId", "value": "{{filaId}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar senha",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/senhas/{{senhaId}}/cancelar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "senhas", "{{senhaId}}", "cancelar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fila",
+      "item": [
+        {
+          "name": "Painel da fila",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/fila?filaId={{filaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "fila"],
+              "query": [{ "key": "filaId", "value": "{{filaId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Estatísticas do dia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/fila/estatisticas?filaId={{filaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "fila", "estatisticas"],
+              "query": [{ "key": "filaId", "value": "{{filaId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Chamar próxima senha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('senhaId', body.senhaId);",
+                  "pm.collectionVariables.set('atendimentoId', body.atendimentoId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filaId\": {{filaId}},\n  \"guiche\": \"G1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/fila/proxima", "host": ["{{baseUrl}}"], "path": ["api", "fila", "proxima"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Atendimentos",
+      "item": [
+        {
+          "name": "Iniciar atendimento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('atendimentoId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senhaId\": {{senhaId}},\n  \"guiche\": \"G1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/atendimentos/iniciar", "host": ["{{baseUrl}}"], "path": ["api", "atendimentos", "iniciar"] }
+          }
+        },
+        {
+          "name": "Finalizar atendimento",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"atendimentoId\": {{atendimentoId}},\n  \"observacao\": \"Atendimento concluído\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/atendimentos/finalizar", "host": ["{{baseUrl}}"], "path": ["api", "atendimentos", "finalizar"] }
+          }
+        },
+        {
+          "name": "Histórico de atendimentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/atendimentos?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "atendimentos"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consultar atendimento por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/atendimentos/{{atendimentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "atendimentos", "{{atendimentoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administração",
+      "item": [
+        {
+          "name": "Listar filas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/filas", "host": ["{{baseUrl}}"], "path": ["api", "filas"] }
+          }
+        },
+        {
+          "name": "Criar fila (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Financeiro\",\n  \"prefixo\": \"F\",\n  \"descricao\": \"Atendimento financeiro\",\n  \"ativa\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/filas", "host": ["{{baseUrl}}"], "path": ["api", "filas"] }
+          }
+        },
+        {
+          "name": "Listar usuários (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
