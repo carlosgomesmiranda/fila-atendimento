@@ -28,7 +28,7 @@
 
 ### 0:00 – 0:30 · Abertura e objetivo (Slide 1)
 
-> “Boa tarde. Meu nome é _(nome)_ e vou apresentar o MVP de uma **API de Fila de Atendimento**, desenvolvida para o Programa Residência em TIC.
+> “Boa tarde. Meu nome é Carlos Gomes Miranda e vou apresentar o MVP de uma **API de Fila de Atendimento**, desenvolvida para o Programa Residência em TIC.
 >
 > O objetivo foi construir o backend completo de um sistema de filas: emitir senha, chamar em ordem de chegada, registrar o atendimento e gerar indicadores. A stack é **Java 21, Spring Boot 3, PostgreSQL e Docker**.”
 

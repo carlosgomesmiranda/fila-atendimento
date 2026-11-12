@@ -4,7 +4,7 @@
 **Projeto:** API de Fila de Atendimento (backend)
 **Versão:** 1.0.0
 **Stack principal:** Java 21 · Spring Boot 3.5.16 · PostgreSQL 16 · Docker
-**Autor:** _(preencher)_
+**Autor:** Carlos Gomes Miranda
 **Orientador:** _(preencher)_
 **Data:** 11/11/2026
 

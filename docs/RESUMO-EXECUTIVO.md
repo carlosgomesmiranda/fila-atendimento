@@ -2,8 +2,8 @@
 
 **Projeto:** Sistema de Fila de Atendimento (backend)
 **Curso:** Programa Residência em TIC — Capacita Brasil / iRede
-**Autor:** _(seu nome)_ · **Orientador:** _(nome)_
-**Repositório:** `https://github.com/<usuario>/<repo>`
+**Autor:** Carlos Gomes Miranda · **Orientador:** _(nome)_
+**Repositório:** `https://github.com/carlosgomesmiranda/fila-atendimento`
 **Data:** 11/11/2026
 
 ---

@@ -13,9 +13,9 @@
 **Java 21 · Spring Boot 3 · PostgreSQL 16 · Docker**
 
 Programa Residência em TIC — Capacita Brasil / iRede
-Aluno: _(seu nome)_ · Orientador: _(nome do professor)_
+Aluno: Carlos Gomes Miranda · Orientador: _(nome do professor)_
 
-<sub>Repositório: `github.com/<usuario>/<repo>` · Swagger: `localhost:8080/swagger-ui/index.html`</sub>
+<sub>Repositório: `github.com/carlosgomesmiranda/fila-atendimento` · Swagger: `localhost:8080/swagger-ui/index.html`</sub>
 
 > **Fala:** “Vou apresentar o MVP de uma API que digitaliza filas de atendimento presencial, cobrindo da emissão da senha ao indicador de tempo médio.”
 
