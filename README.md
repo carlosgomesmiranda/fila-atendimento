@@ -1,11 +1,13 @@
 # Fila de Atendimento — API
 
-![Java](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
-![Testes](https://img.shields.io/badge/testes-120%20passando-success)
-![Cobertura](https://img.shields.io/badge/cobertura-93%2C3%25-success)
+[![CI](https://github.com/carlosgomesmiranda/fila-atendimento/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosgomesmiranda/fila-atendimento/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/carlosgomesmiranda/fila-atendimento?label=release&color=blue)](https://github.com/carlosgomesmiranda/fila-atendimento/releases)
+[![Java](https://img.shields.io/badge/Java-21-orange)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/docs/16/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](https://docs.docker.com/compose/)
+[![Testes](https://img.shields.io/badge/testes-120%20passando-success)](https://github.com/carlosgomesmiranda/fila-atendimento/actions/workflows/ci.yml)
+[![Cobertura](https://img.shields.io/badge/cobertura-93%2C3%25-success)](docs/TESTES.md)
 
 MVP de gerenciamento de filas de atendimento presencial, desenvolvido como projeto do **Programa Residência em TIC (Capacita Brasil / iRede)**.
 
@@ -29,6 +31,7 @@ A solução é **API-only** (sem frontend), com contrato REST documentado via **
 - [Usuários de demonstração](#usuários-de-demonstração)
 - [Fluxo de exemplo](#fluxo-de-exemplo)
 - [Testes e resultados](#testes-e-resultados)
+- [Integração contínua](#integração-contínua)
 - [Prints sugeridos](#prints-sugeridos)
 - [Documentação](#documentação)
 - [Licença](#licença)
@@ -424,6 +427,24 @@ curl -s -X POST "$BASE/api/atendimentos/finalizar" \
 - Relatório HTML: `target/site/jacoco/index.html`.
 - Integração com **H2 em modo PostgreSQL** e as mesmas migrações Flyway.
 - Estratégia e suítes: [`docs/TESTES.md`](docs/TESTES.md).
+
+---
+
+## Integração contínua
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda a cada `push` e `pull request` na `main`:
+
+| Job | O que faz |
+| --- | --- |
+| **Build, testes e cobertura** | JDK 21 (Temurin) + cache Maven → `./mvnw verify` (testes + gate de 80%) |
+| **Build da imagem Docker** | Build multi-stage com cache e validação do `docker compose config` |
+
+Artefatos publicados em cada execução:
+
+- `jacoco-report` — relatório HTML de cobertura
+- `surefire-reports` — relatórios de testes
+
+O resumo da execução (cobertura de linhas, branches e status do gate) aparece direto na aba **Actions → Summary**.
 
 ---
 
