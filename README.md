@@ -457,39 +457,59 @@ Todas as imagens abaixo foram capturadas da API **em execução** (`docker compo
 
 ### Swagger UI
 
-| Visão geral | Endpoints por tag |
-| :---: | :---: |
-| <img src="docs/images/01-swagger-visao-geral.jpg" width="430" alt="Swagger UI - visão geral da API"> | <img src="docs/images/02-swagger-endpoints.jpg" width="430" alt="Swagger UI - endpoints agrupados por tag"> |
-| Título, versão 1.0.0, servidor e botão **Authorize** | 24 operações em 6 tags: Atendimentos, Autenticacao, Fila, Filas, Senhas e Usuarios |
+**Visão geral** — título, versão 1.0.0, servidor e botão **Authorize**.
 
-| Autorização Bearer | Login |
-| :---: | :---: |
-| <img src="docs/images/03-authorize.jpg" width="430" alt="Swagger UI - diálogo Available authorizations"> | <img src="docs/images/04-login.jpg" width="430" alt="Swagger UI - POST /api/auth/login retornando JWT"> |
-| Token JWT informado no esquema `bearerAuth` | `POST /api/auth/login` → **200** com `token`, `tipo` e `expiraEmSegundos` |
+<img src="docs/images/01-swagger-visao-geral.jpg" width="820" alt="Swagger UI - visão geral da API">
+
+**Endpoints por tag** — 24 operações agrupadas em 6 grupos: Atendimentos, Autenticacao, Fila, Filas, Senhas e Usuarios.
+
+<img src="docs/images/02-swagger-endpoints.jpg" width="820" alt="Swagger UI - endpoints agrupados por tag">
+
+### Autenticação
+
+**Authorize (`bearerAuth`)** — o campo `Value` recebe apenas o JWT; o prefixo `Bearer` é adicionado pelo próprio Swagger.
+
+<img src="docs/images/03-authorize.jpg" width="820" alt="Swagger UI - diálogo Available authorizations">
+
+**Login** — `POST /api/auth/login` → **200** com `token`, `tipo` e `expiraEmSegundos`, além dos dados do usuário autenticado.
+
+<img src="docs/images/04-login.jpg" width="820" alt="Swagger UI - POST /api/auth/login retornando JWT">
 
 ### Fluxo de atendimento
 
-| 1. Emitir senha | 2. Painel da fila |
-| :---: | :---: |
-| <img src="docs/images/05-senha-201.jpg" width="430" alt="POST /api/senhas retornando 201"> | <img src="docs/images/06-fila-painel.jpg" width="430" alt="GET /api/fila com o painel da fila"> |
-| `POST /api/senhas` → **201** com `numero`, `posicao` e `pessoasNaFrente` | `GET /api/fila?filaId=1` → **200** com `aguardando`, `chamadas` e `emAtendimento` |
+**1. Emitir senha** — `POST /api/senhas` → **201** com `numero`, `posicao` e `pessoasNaFrente`.
 
-| 3. Chamar próxima (FIFO) | 4. Iniciar atendimento |
-| :---: | :---: |
-| <img src="docs/images/07-chamar-proxima.jpg" width="430" alt="POST /api/fila/proxima chamando a próxima senha"> | <img src="docs/images/08-iniciar-atendimento.jpg" width="430" alt="POST /api/atendimentos/iniciar"> |
-| `POST /api/fila/proxima` → **200** com `numero`, `guiche` e `atendimentoId` | `POST /api/atendimentos/iniciar` → **200** com `statusSenha: EM_ATENDIMENTO` |
+<img src="docs/images/05-senha-201.jpg" width="820" alt="POST /api/senhas retornando 201">
 
-| 5. Finalizar atendimento | 6. Estatísticas do dia |
-| :---: | :---: |
-| <img src="docs/images/09-finalizar-atendimento.jpg" width="430" alt="POST /api/atendimentos/finalizar"> | <img src="docs/images/10-estatisticas.jpg" width="430" alt="GET /api/fila/estatisticas"> |
-| `POST /api/atendimentos/finalizar` → **200** com `statusSenha: ATENDIDA` e `duracaoSegundos` | `GET /api/fila/estatisticas` → **200** com tempos médios e totais do dia |
+**2. Painel da fila** — `GET /api/fila?filaId=1` → **200** com `aguardando`, `chamadas`, `emAtendimento` e `totalAguardando`.
+
+<img src="docs/images/06-fila-painel.jpg" width="820" alt="GET /api/fila com o painel da fila">
+
+**3. Chamar a próxima (FIFO)** — `POST /api/fila/proxima` → **200** com `numero`, `guiche`, `atendimentoId` e `aguardandoRestantes`.
+
+<img src="docs/images/07-chamar-proxima.jpg" width="820" alt="POST /api/fila/proxima chamando a próxima senha">
+
+**4. Iniciar atendimento** — `POST /api/atendimentos/iniciar` → **200** com `statusSenha: EM_ATENDIMENTO` e `atendenteNome`.
+
+<img src="docs/images/08-iniciar-atendimento.jpg" width="820" alt="POST /api/atendimentos/iniciar">
+
+**5. Finalizar atendimento** — `POST /api/atendimentos/finalizar` → **200** com `statusSenha: ATENDIDA` e `duracaoSegundos`.
+
+<img src="docs/images/09-finalizar-atendimento.jpg" width="820" alt="POST /api/atendimentos/finalizar">
+
+**6. Estatísticas do dia** — `GET /api/fila/estatisticas` → **200** com totais por status, tempos médios e última senha emitida/chamada.
+
+<img src="docs/images/10-estatisticas.jpg" width="820" alt="GET /api/fila/estatisticas">
 
 ### Erros padronizados (RFC 9457)
 
-| 409 — regra de negócio | 401 — não autenticado |
-| :---: | :---: |
-| <img src="docs/images/11-erro-409.jpg" width="430" alt="Erro 409 Conflict no padrão ProblemDetail"> | <img src="docs/images/12-erro-401.jpg" width="430" alt="Erro 401 Unauthorized no padrão ProblemDetail"> |
-| Cancelar senha já `ATENDIDA` → `codigo: TRANSICAO_INVALIDA` | Chamada sem token → `codigo: NAO_AUTENTICADO` |
+**409 — regra de negócio:** cancelar uma senha já `ATENDIDA` devolve `codigo: TRANSICAO_INVALIDA`.
+
+<img src="docs/images/11-erro-409.jpg" width="820" alt="Erro 409 Conflict no padrão ProblemDetail">
+
+**401 — não autenticado:** chamada sem token devolve `codigo: NAO_AUTENTICADO`.
+
+<img src="docs/images/12-erro-401.jpg" width="820" alt="Erro 401 Unauthorized no padrão ProblemDetail">
 
 Os dois erros trazem `instance`, `timestamp` e `traceId` — o mesmo identificador que aparece nos logs da aplicação, o que facilita a correlação durante o suporte.
 
