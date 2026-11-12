@@ -34,6 +34,7 @@
 - [ ] Cobertura de linhas ≥ 80% (**93,3%** no relatório completo)
 - [ ] Relatório JaCoCo disponível em `target/site/jacoco/index.html`
 - [ ] Gate de cobertura configurado no `pom.xml`
+- [ ] Pipeline CI verde no GitHub Actions (build, testes, cobertura e imagem Docker)
 - [ ] Nenhum teste ignorado (`@Disabled`) sem justificativa
 
 ## 4. Banco de dados e migrações
