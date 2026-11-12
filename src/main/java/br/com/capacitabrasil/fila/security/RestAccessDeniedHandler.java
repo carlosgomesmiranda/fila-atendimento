@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Component
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Override
     public void handle(HttpServletRequest request,
@@ -32,7 +34,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
         problem.setTitle("Acesso negado");
         problem.setInstance(URI.create(request.getRequestURI()));
         problem.setProperty("codigo", "ACESSO_NEGADO");
-        problem.setProperty("timestamp", LocalDateTime.now());
+        problem.setProperty("timestamp", LocalDateTime.now(clock));
         problem.setProperty("traceId", MDC.get(TraceIdFilter.TRACE_ID));
 
         response.setStatus(HttpStatus.FORBIDDEN.value());

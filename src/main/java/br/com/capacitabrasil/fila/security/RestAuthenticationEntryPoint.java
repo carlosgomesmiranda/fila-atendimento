@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Component
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Override
     public void commence(HttpServletRequest request,
@@ -32,7 +34,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         problem.setTitle("Nao autenticado");
         problem.setInstance(URI.create(request.getRequestURI()));
         problem.setProperty("codigo", "NAO_AUTENTICADO");
-        problem.setProperty("timestamp", LocalDateTime.now());
+        problem.setProperty("timestamp", LocalDateTime.now(clock));
         problem.setProperty("traceId", MDC.get(TraceIdFilter.TRACE_ID));
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
