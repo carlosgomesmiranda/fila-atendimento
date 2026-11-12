@@ -99,7 +99,8 @@
 
 ## 9. Documentação
 
-- [ ] `README.md` — descrição, funcionalidades, tecnologias, instalação, configuração, execução, Swagger, Docker, estrutura e prints sugeridos
+- [ ] `README.md` — descrição, funcionalidades, tecnologias, instalação, configuração, execução, Swagger, Docker, estrutura e prints da aplicação
+- [ ] `docs/images/` — 12 prints reais do Swagger UI referenciados no README
 - [ ] `docs/REQUISITOS.md` — RF, RNF, RN e rastreabilidade
 - [ ] `docs/RELATORIO-ACADEMICO.md` — relatório completo
 - [ ] `docs/ARQUITETURA.md` — camadas, diagramas e decisões

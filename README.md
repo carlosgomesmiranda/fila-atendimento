@@ -32,7 +32,7 @@ A solução é **API-only** (sem frontend), com contrato REST documentado via **
 - [Fluxo de exemplo](#fluxo-de-exemplo)
 - [Testes e resultados](#testes-e-resultados)
 - [Integração contínua](#integração-contínua)
-- [Prints sugeridos](#prints-sugeridos)
+- [Prints da aplicação](#prints-da-aplicação)
 - [Documentação](#documentação)
 - [Licença](#licença)
 
@@ -177,6 +177,7 @@ Detalhes e diagramas: [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) · Modelo de 
 │   ├── ROTEIRO-APRESENTACAO.md
 │   ├── RESUMO-EXECUTIVO.md
 │   ├── CHECKLIST-ENTREGA.md
+│   ├── images/              # prints do Swagger UI (README)
 │   └── FilaAtendimento.postman_collection.json
 └── src/
     ├── main/
@@ -328,10 +329,10 @@ Com a aplicação em execução:
 
 1. Execute `POST /api/auth/login` com um usuário de demonstração.
 2. Copie o `token` da resposta.
-3. Clique em **Authorize** e informe o token (o esquema é `bearerAuth`).
+3. Clique em **Authorize** e cole **apenas o token** no campo `Value` — não digite `Bearer`, o Swagger já adiciona esse prefixo ao montar a requisição.
 4. Os endpoints protegidos passam a aceitar as chamadas.
 
-Referência completa com payloads e códigos de erro: [`docs/API.md`](docs/API.md).
+Prints reais de cada etapa: [Prints da aplicação](#prints-da-aplicação). Referência completa com payloads e códigos de erro: [`docs/API.md`](docs/API.md).
 
 ---
 
@@ -448,28 +449,51 @@ O resumo da execução (cobertura de linhas, branches e status do gate) aparece 
 
 ---
 
-## Prints sugeridos
+## Prints da aplicação
 
-Sugestão de capturas para o relatório/apresentação:
+Todas as imagens abaixo foram capturadas da API **em execução** (`docker compose up`), direto no Swagger UI em <http://localhost:8080/swagger-ui/index.html>. Não há mockups: o que aparece é a resposta real de cada endpoint, com o banco PostgreSQL populado pelo seed.
 
-| # | Print | O que destacar |
-| --- | --- | --- |
-| 1 | `docker compose ps` | `fila-api` e `fila-postgres` como **healthy** |
-| 2 | Swagger UI — visão geral | Título, versão 1.0.0 e os 17 paths agrupados por tag |
-| 3 | Swagger UI — `POST /api/senhas` | Corpo da requisição e resposta **201** com `A001` |
-| 4 | Swagger UI — Authorize | Token Bearer configurado |
-| 5 | `GET /api/fila` | Painel com `aguardando`, `chamadas` e `emAtendimento` |
-| 6 | `POST /api/fila/proxima` | Resposta com `numero`, `guiche` e `atendimentoId` |
-| 7 | `POST /api/atendimentos/finalizar` | Status `ATENDIDA` e `duracaoSegundos` |
-| 8 | `GET /api/fila/estatisticas` | Tempos médios e totais do dia |
-| 9 | Erro 401/403 | `ProblemDetail` com `codigo`, `traceId` e `instance` |
-| 10 | IntelliJ — estrutura de pacotes | Camadas `controller/service/repository/entity` |
-| 11 | Terminal — `mvn verify` | `Tests run: 120` e `BUILD SUCCESS` |
-| 12 | Relatório JaCoCo | Cobertura de 93,3% e verde por pacote |
-| 13 | Banco — `\dt` + `flyway_schema_history` | 6 tabelas e as 3 migrações aplicadas |
-| 14 | GitHub — README | Documentação e badges |
+**Autenticação no Swagger:** o campo `Value` do esquema `bearerAuth` recebe **apenas o token** retornado pelo login — o Swagger já adiciona o prefixo `Bearer` ao montar a requisição.
 
-> Dica: use o Swagger UI para os prints de API; ele já mostra método, rota, payload e resposta formatados.
+### Swagger UI
+
+| Visão geral | Endpoints por tag |
+| :---: | :---: |
+| <img src="docs/images/01-swagger-visao-geral.jpg" width="430" alt="Swagger UI - visão geral da API"> | <img src="docs/images/02-swagger-endpoints.jpg" width="430" alt="Swagger UI - endpoints agrupados por tag"> |
+| Título, versão 1.0.0, servidor e botão **Authorize** | 24 operações em 6 tags: Atendimentos, Autenticacao, Fila, Filas, Senhas e Usuarios |
+
+| Autorização Bearer | Login |
+| :---: | :---: |
+| <img src="docs/images/03-authorize.jpg" width="430" alt="Swagger UI - diálogo Available authorizations"> | <img src="docs/images/04-login.jpg" width="430" alt="Swagger UI - POST /api/auth/login retornando JWT"> |
+| Token JWT informado no esquema `bearerAuth` | `POST /api/auth/login` → **200** com `token`, `tipo` e `expiraEmSegundos` |
+
+### Fluxo de atendimento
+
+| 1. Emitir senha | 2. Painel da fila |
+| :---: | :---: |
+| <img src="docs/images/05-senha-201.jpg" width="430" alt="POST /api/senhas retornando 201"> | <img src="docs/images/06-fila-painel.jpg" width="430" alt="GET /api/fila com o painel da fila"> |
+| `POST /api/senhas` → **201** com `numero`, `posicao` e `pessoasNaFrente` | `GET /api/fila?filaId=1` → **200** com `aguardando`, `chamadas` e `emAtendimento` |
+
+| 3. Chamar próxima (FIFO) | 4. Iniciar atendimento |
+| :---: | :---: |
+| <img src="docs/images/07-chamar-proxima.jpg" width="430" alt="POST /api/fila/proxima chamando a próxima senha"> | <img src="docs/images/08-iniciar-atendimento.jpg" width="430" alt="POST /api/atendimentos/iniciar"> |
+| `POST /api/fila/proxima` → **200** com `numero`, `guiche` e `atendimentoId` | `POST /api/atendimentos/iniciar` → **200** com `statusSenha: EM_ATENDIMENTO` |
+
+| 5. Finalizar atendimento | 6. Estatísticas do dia |
+| :---: | :---: |
+| <img src="docs/images/09-finalizar-atendimento.jpg" width="430" alt="POST /api/atendimentos/finalizar"> | <img src="docs/images/10-estatisticas.jpg" width="430" alt="GET /api/fila/estatisticas"> |
+| `POST /api/atendimentos/finalizar` → **200** com `statusSenha: ATENDIDA` e `duracaoSegundos` | `GET /api/fila/estatisticas` → **200** com tempos médios e totais do dia |
+
+### Erros padronizados (RFC 9457)
+
+| 409 — regra de negócio | 401 — não autenticado |
+| :---: | :---: |
+| <img src="docs/images/11-erro-409.jpg" width="430" alt="Erro 409 Conflict no padrão ProblemDetail"> | <img src="docs/images/12-erro-401.jpg" width="430" alt="Erro 401 Unauthorized no padrão ProblemDetail"> |
+| Cancelar senha já `ATENDIDA` → `codigo: TRANSICAO_INVALIDA` | Chamada sem token → `codigo: NAO_AUTENTICADO` |
+
+Os dois erros trazem `instance`, `timestamp` e `traceId` — o mesmo identificador que aparece nos logs da aplicação, o que facilita a correlação durante o suporte.
+
+> Outras capturas úteis para a apresentação: `docker compose ps` (containers *healthy*), saída do `./mvnw verify` e o relatório HTML do JaCoCo em `target/site/jacoco/index.html`. Ver [`docs/CHECKLIST-ENTREGA.md`](docs/CHECKLIST-ENTREGA.md).
 
 ---
 
